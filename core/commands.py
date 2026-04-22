@@ -1,6 +1,4 @@
 # Full updated `core/commands.py`
-
-```python
 from utils.runner import run
 import shutil
 import os
