@@ -77,7 +77,6 @@ def handle_command(ch):
 
     # MIRROR BACKGROUND MODE 🔥
     elif ch == "5":
-    import subprocess
 
     if shutil.which("scrcpy"):
         subprocess.Popen(
