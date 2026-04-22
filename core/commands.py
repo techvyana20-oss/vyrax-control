@@ -76,19 +76,18 @@ def handle_command(ch):
 
 
     # MIRROR BACKGROUND MODE 🔥
-    elif ch == "5":
+       elif ch == "5":
+        if shutil.which("scrcpy"):
+            subprocess.Popen(
+                ["scrcpy"],
+                start_new_session=True
+            )
 
-    if shutil.which("scrcpy"):
-        subprocess.Popen(
-            ["scrcpy"],
-            start_new_session=True
-        )
+            print("✔ Mirror opened")
+            print("👉 Use menu while watching screen")
 
-        print("✔ Mirror opened")
-        print("Use menu while watching screen")
-
-    else:
-        print("❌ scrcpy not installed")
+        else:
+            print("❌ scrcpy not installed")
 
 
     elif ch == "6":
