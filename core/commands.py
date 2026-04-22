@@ -1,6 +1,4 @@
 # Replace `core/commands.py` with EXACTLY this (copy only code)
-
-```python
 from utils.runner import run
 import shutil
 import os
