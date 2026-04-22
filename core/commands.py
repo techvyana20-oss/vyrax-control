@@ -22,39 +22,51 @@ def handle_command(ch):
         print("1) Pair Android 11+")
         print("2) Connect 5555\n")
 
-        mode=input("Select mode: ").strip()
+        mode = input("Select mode: ").strip()
 
-        if mode=="1":
-            ip=input("IP: ").strip()
-            pair_port=input("Pairing Port: ").strip()
-            code=input("Pairing Code: ").strip()
+        if mode == "1":
+            ip         = input("IP: ").strip()
+            pair_port  = input("Pairing Port: ").strip()
+            code       = input("Pairing Code: ").strip()
 
-            run(
-                f"adb pair {ip}:{pair_port}",
-                input_data=code+"\n"
+            # ✅ Fix 1: Use Popen + communicate instead of piping input_data
+            print(f"Pairing with {ip}:{pair_port} ...")
+            proc = subprocess.Popen(
+                ["adb", "pair", f"{ip}:{pair_port}"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
             )
+            try:
+                stdout, stderr = proc.communicate(input=code + "\n", timeout=15)
+                output = stdout or stderr
+                print(output)
+                if "Successfully paired" not in output:
+                    print("❌ Pairing may have failed. Check code and ports.")
+                    return
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                print("❌ Pairing timed out.")
+                return
 
-            connect_port=input("Connect Port: ").strip()
+            connect_port = input("Connect Port: ").strip()
+
+            # ✅ Fix 2: Wait for device to finish pairing handshake
+            print("⏳ Waiting for device to be ready...")
+            time.sleep(2)
 
             run("adb disconnect")
             run(f"adb connect {ip}:{connect_port}")
-
-            save_device(
-                f"{ip}:{connect_port}"
-            )
-
+            save_device(f"{ip}:{connect_port}")
             check_and_fix()
 
-        elif mode=="2":
-            ip=input("IP: ").strip()
+        elif mode == "2":
+            ip = input("IP: ").strip()
 
             run("adb disconnect")
             run(f"adb connect {ip}:5555")
-
-            save_device(
-                f"{ip}:5555"
-            )
-
+            save_device(f"{ip}:5555")
             check_and_fix()
 
 
@@ -63,19 +75,13 @@ def handle_command(ch):
 
 
     elif ch == "4":
-        secs=input("Seconds (30): ").strip() or "30"
-        name=f"record_{int(time.time())}.mp4"
+        secs = input("Seconds (30): ").strip() or "30"
+        name = f"record_{int(time.time())}.mp4"
 
-        run(
-            f"adb shell screenrecord --time-limit {secs} /sdcard/{name}"
-        )
-
-        run(
-            f"adb pull /sdcard/{name} captures/recordings/"
-        )
+        run(f"adb shell screenrecord --time-limit {secs} /sdcard/{name}")
+        run(f"adb pull /sdcard/{name} captures/recordings/")
 
 
-    # MIRROR BACKGROUND MODE 🔥
     elif ch == "5":
         if shutil.which("scrcpy"):
             subprocess.Popen(
@@ -87,20 +93,16 @@ def handle_command(ch):
         else:
             print("❌ scrcpy not installed")
 
+
     elif ch == "6":
         run("adb shell pm list packages")
 
 
     elif ch == "7":
-        name=f"shot_{int(time.time())}.png"
+        name = f"shot_{int(time.time())}.png"
 
-        run(
-            f"adb shell screencap -p /sdcard/{name}"
-        )
-
-        run(
-            f"adb pull /sdcard/{name} captures/screenshots/"
-        )
+        run(f"adb shell screencap -p /sdcard/{name}")
+        run(f"adb pull /sdcard/{name} captures/screenshots/")
 
 
     elif ch == "8":
@@ -108,34 +110,28 @@ def handle_command(ch):
 
 
     elif ch == "9":
-        path=input("APK: ")
+        path = input("APK: ")
         run(f"adb install {path}")
 
 
     elif ch == "10":
-        pkg=input("Package: ")
+        pkg = input("Package: ")
         run(f"adb uninstall {pkg}")
 
 
     elif ch == "11":
-        path=input("Phone path: ")
-        run(
-            f"adb pull {path} captures/files/"
-        )
+        path = input("Phone path: ")
+        run(f"adb pull {path} captures/files/")
 
 
     elif ch == "12":
-        path=input("Local file: ")
-        run(
-            f"adb push {path} /sdcard/"
-        )
+        path = input("Local file: ")
+        run(f"adb push {path} /sdcard/")
 
 
     elif ch == "13":
-        pkg=input("Package: ")
-        run(
-            f"adb shell monkey -p {pkg} -c android.intent.category.LAUNCHER 1"
-        )
+        pkg = input("Package: ")
+        run(f"adb shell monkey -p {pkg} -c android.intent.category.LAUNCHER 1")
 
 
     elif ch == "14":
@@ -183,16 +179,12 @@ def handle_command(ch):
 
 
     elif ch == "25":
-        run(
-            "adb shell input swipe 300 1000 300 300"
-        )
+        run("adb shell input swipe 300 1000 300 300")
 
 
     elif ch == "26":
-        url=input("URL: ")
-        run(
-            f'adb shell am start -a android.intent.action.VIEW -d "{url}"'
-        )
+        url = input("URL: ")
+        run(f'adb shell am start -a android.intent.action.VIEW -d "{url}"')
 
 
     elif ch == "27":
@@ -204,10 +196,8 @@ def handle_command(ch):
 
 
     elif ch == "29":
-        pkg=input("Package: ")
-        run(
-            f"adb shell am force-stop {pkg}"
-        )
+        pkg = input("Package: ")
+        run(f"adb shell am force-stop {pkg}")
 
 
     elif ch == "30":
@@ -215,29 +205,21 @@ def handle_command(ch):
 
 
     elif ch == "31":
-        run(
-            "adb shell settings put global airplane_mode_on 1"
-        )
+        run("adb shell settings put global airplane_mode_on 1")
 
 
     elif ch == "32":
-        run(
-            "adb shell settings put global airplane_mode_on 0"
-        )
+        run("adb shell settings put global airplane_mode_on 0")
 
 
     elif ch == "33":
-        pkg=input("Package: ")
-        run(
-            f"adb shell pm disable-user --user 0 {pkg}"
-        )
+        pkg = input("Package: ")
+        run(f"adb shell pm disable-user --user 0 {pkg}")
 
 
     elif ch == "34":
-        pkg=input("Package: ")
-        run(
-            f"adb shell pm enable {pkg}"
-        )
+        pkg = input("Package: ")
+        run(f"adb shell pm enable {pkg}")
 
 
     elif ch == "35":
@@ -256,49 +238,33 @@ def handle_command(ch):
 
 
     elif ch == "38":
-        secs=input("Record seconds: ").strip() or "20"
-        name=f"media_{int(time.time())}.mp4"
+        secs = input("Record seconds: ").strip() or "20"
+        name = f"media_{int(time.time())}.mp4"
 
-        run(
-            f"adb shell screenrecord --time-limit {secs} /sdcard/{name}"
-        )
-
-        run(
-            f"adb pull /sdcard/{name} captures/recordings/"
-        )
+        run(f"adb shell screenrecord --time-limit {secs} /sdcard/{name}")
+        run(f"adb pull /sdcard/{name} captures/recordings/")
 
 
     elif ch == "39":
-        run(
-            "adb shell am start -a android.media.action.IMAGE_CAPTURE"
-        )
+        run("adb shell am start -a android.media.action.IMAGE_CAPTURE")
 
 
     elif ch == "40":
-        run(
-            "adb shell monkey -p com.transsion.soundrecorder -c android.intent.category.LAUNCHER 1"
-        )
+        run("adb shell monkey -p com.transsion.soundrecorder -c android.intent.category.LAUNCHER 1")
 
 
     elif ch == "41":
-        run(
-            "adb pull /sdcard/Recordings captures/files/"
-        )
+        run("adb pull /sdcard/Recordings captures/files/")
 
 
     elif ch == "42":
-        run(
-            "adb shell cmd flashlight set on"
-        )
+        run("adb shell cmd flashlight set on")
 
 
     elif ch == "43":
-        run(
-            "adb shell cmd flashlight set off"
-        )
+        run("adb shell cmd flashlight set off")
 
 
-    # STOP MIRROR
     elif ch == "44":
         run("pkill scrcpy")
         print("✔ Mirror stopped")
