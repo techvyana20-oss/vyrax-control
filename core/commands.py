@@ -317,5 +317,3 @@ def handle_command(ch):
     else:
         print("Invalid option")
 
-[44] Stop Mirror
-```
