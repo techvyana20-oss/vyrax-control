@@ -76,7 +76,7 @@ def handle_command(ch):
 
 
     # MIRROR BACKGROUND MODE 🔥
-           elif ch == "5":
+    elif ch == "5":
         if shutil.which("scrcpy"):
             subprocess.Popen(
                 ["scrcpy"],
@@ -134,7 +134,7 @@ def handle_command(ch):
     elif ch == "13":
         pkg=input("Package: ")
         run(
-         f"adb shell monkey -p {pkg} -c android.intent.category.LAUNCHER 1"
+            f"adb shell monkey -p {pkg} -c android.intent.category.LAUNCHER 1"
         )
 
 
@@ -184,14 +184,14 @@ def handle_command(ch):
 
     elif ch == "25":
         run(
-         "adb shell input swipe 300 1000 300 300"
+            "adb shell input swipe 300 1000 300 300"
         )
 
 
     elif ch == "26":
         url=input("URL: ")
         run(
-         f'adb shell am start -a android.intent.action.VIEW -d "{url}"'
+            f'adb shell am start -a android.intent.action.VIEW -d "{url}"'
         )
 
 
@@ -206,7 +206,7 @@ def handle_command(ch):
     elif ch == "29":
         pkg=input("Package: ")
         run(
-         f"adb shell am force-stop {pkg}"
+            f"adb shell am force-stop {pkg}"
         )
 
 
@@ -216,27 +216,27 @@ def handle_command(ch):
 
     elif ch == "31":
         run(
-          "adb shell settings put global airplane_mode_on 1"
+            "adb shell settings put global airplane_mode_on 1"
         )
 
 
     elif ch == "32":
         run(
-          "adb shell settings put global airplane_mode_on 0"
+            "adb shell settings put global airplane_mode_on 0"
         )
 
 
     elif ch == "33":
         pkg=input("Package: ")
         run(
-         f"adb shell pm disable-user --user 0 {pkg}"
+            f"adb shell pm disable-user --user 0 {pkg}"
         )
 
 
     elif ch == "34":
         pkg=input("Package: ")
         run(
-         f"adb shell pm enable {pkg}"
+            f"adb shell pm enable {pkg}"
         )
 
 
@@ -260,41 +260,41 @@ def handle_command(ch):
         name=f"media_{int(time.time())}.mp4"
 
         run(
-         f"adb shell screenrecord --time-limit {secs} /sdcard/{name}"
+            f"adb shell screenrecord --time-limit {secs} /sdcard/{name}"
         )
 
         run(
-         f"adb pull /sdcard/{name} captures/recordings/"
+            f"adb pull /sdcard/{name} captures/recordings/"
         )
 
 
     elif ch == "39":
         run(
-         "adb shell am start -a android.media.action.IMAGE_CAPTURE"
+            "adb shell am start -a android.media.action.IMAGE_CAPTURE"
         )
 
 
     elif ch == "40":
         run(
-         "adb shell monkey -p com.transsion.soundrecorder -c android.intent.category.LAUNCHER 1"
+            "adb shell monkey -p com.transsion.soundrecorder -c android.intent.category.LAUNCHER 1"
         )
 
 
     elif ch == "41":
         run(
-         "adb pull /sdcard/Recordings captures/files/"
+            "adb pull /sdcard/Recordings captures/files/"
         )
 
 
     elif ch == "42":
         run(
-         "adb shell cmd flashlight set on"
+            "adb shell cmd flashlight set on"
         )
 
 
     elif ch == "43":
         run(
-         "adb shell cmd flashlight set off"
+            "adb shell cmd flashlight set off"
         )
 
 
@@ -306,4 +306,3 @@ def handle_command(ch):
 
     else:
         print("Invalid option")
-
